@@ -170,7 +170,7 @@ const BarRow: React.FC<{ label: string; value: number; max: number; prefix?: str
   const valueText = (
     <div style={{ width: vertical ? undefined : 200 * u, fontFamily: fonts.mono, fontWeight: 600, fontSize: 32 * u, color: highlight ? color.red : color.ink }}>
       {prefix ?? ""}
-      {fmt(value * g, value % 1 ? 1 : 0)}
+      {fmt(value * g, Math.min(2, (String(value).split(".")[1] ?? "").length))}
       {unit ?? ""}
     </div>
   );
