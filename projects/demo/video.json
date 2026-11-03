@@ -1,0 +1,58 @@
+{
+  "meta": { "title": "Why Your Coffee Costs More Every Year", "format": "landscape" },
+  "scenes": [
+    {
+      "type": "title",
+      "duration": 4,
+      "kicker": "Explained in 40 seconds",
+      "title": "Why your coffee costs more every year",
+      "underline": "more",
+      "say": "Your morning coffee keeps getting more expensive. Here is why."
+    },
+    {
+      "type": "bigNumber",
+      "duration": 4.6,
+      "value": 38,
+      "suffix": "%",
+      "label": "Rise in the average café latte price since 2020",
+      "source": "Sample data for demo",
+      "say": "Since 2020, the average café latte has gone up about thirty-eight percent."
+    },
+    {
+      "type": "chapter",
+      "duration": 3,
+      "number": 1,
+      "title": "Where the money goes",
+      "say": "So where does your money actually go?"
+    },
+    {
+      "type": "bars",
+      "duration": 6.5,
+      "title": "Where your $5.50 goes",
+      "prefix": "$",
+      "items": [
+        { "label": "Rent & staff", "value": 2.6 },
+        { "label": "Milk & cup", "value": 1.1 },
+        { "label": "Coffee beans", "value": 0.6, "highlight": true },
+        { "label": "Profit", "value": 0.4 }
+      ],
+      "source": "Sample data for demo",
+      "say": "The beans are only a small slice. Most of your money pays for rent and staff."
+    },
+    {
+      "type": "list",
+      "duration": 5.6,
+      "title": "How to pay less",
+      "style": "check",
+      "items": ["Brew at home twice a week", "Use the loyalty card", "Order a smaller size"],
+      "say": "Want to pay less? Brew at home, use loyalty cards, and size down."
+    },
+    {
+      "type": "quote",
+      "duration": 6.8,
+      "quote": "The price of a cup is really the price of a city.",
+      "author": "Sample quote",
+      "say": "Because in the end, the price of a cup is really the price of a city."
+    }
+  ]
+}

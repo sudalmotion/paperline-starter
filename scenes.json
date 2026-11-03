@@ -1,0 +1,11 @@
+{
+  "edition": "Paperline Starter",
+  "scenes": [
+    "title",
+    "chapter",
+    "bigNumber",
+    "bars",
+    "list",
+    "quote"
+  ]
+}
