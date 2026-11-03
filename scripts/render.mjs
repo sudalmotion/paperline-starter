@@ -31,9 +31,13 @@ await renderMedia({
 });
 console.log(`\n✓ ${output}  (${(composition.durationInFrames / composition.fps).toFixed(1)}s, ${composition.width}×${composition.height})`);
 
-// Loudness: bring the mix to -14 LUFS (YouTube/Instagram playback level). Needs ffmpeg; skipped if missing.
+// Loudness: with narration or music, bring the mix to -14 LUFS (YouTube/Instagram playback level).
+// Effects-only videos are left as rendered: normalising them would push the effects up to voice level.
+// Their level follows meta.sfxVolume, and there is room for music added later in an editor or the Reels app.
+const hasMain = !!spec.voiceover || !!spec.music || spec.scenes.some((s) => s.voice);
 const ffmpeg = process.env.PAPERLINE_FFMPEG || "ffmpeg";
-try {
+if (!hasMain) console.log("✓ effects only — audio left at its rendered level (set meta.sfxVolume to change it)");
+else try {
   const tmp = output.replace(/\.mp4$/, ".tmp.mp4");
   execFileSync(ffmpeg, ["-y", "-loglevel", "error", "-i", output, "-c:v", "copy", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-c:a", "aac", "-b:a", "192k", tmp]);
   fs.renameSync(tmp, output);

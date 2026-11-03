@@ -2,6 +2,7 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
 import type { Caption } from "../schema";
 import { color, fonts } from "../theme";
 import { useEnter, useUnit, useVertical } from "./motion";
+import { chunkWords } from "./captionChunks";
 
 /** Vertical: captions sit just above the app UI; the source note goes in the gap below them. */
 const CAPTION_BOTTOM_VERTICAL = 0.235;
@@ -20,18 +21,22 @@ export const Captions: React.FC<{ captions: Caption[] }> = ({ captions }) => {
   return (
     <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "center", paddingBottom: vertical ? height * CAPTION_BOTTOM_VERTICAL : width * 0.055 }}>
       <div
-        style={{
-          maxWidth: "78%",
-          background: "rgba(42,37,31,0.88)",
-          color: color.card,
-          fontFamily: fonts.sans,
-          fontWeight: 500,
-          fontSize: 38 * u,
-          lineHeight: 1.3,
-          padding: `${10 * u}px ${22 * u}px`,
-          borderRadius: 6 * u,
-          textAlign: "center",
-        }}
+        style={
+          {
+            maxWidth: vertical ? "88%" : "78%",
+            background: "rgba(42,37,31,0.88)",
+            color: color.card,
+            fontFamily: fonts.sans,
+            fontWeight: 500,
+            fontSize: 38 * u,
+            lineHeight: 1.3,
+            padding: `${10 * u}px ${22 * u}px`,
+            borderRadius: 6 * u,
+            textAlign: "center",
+            // 두 줄로 넘어갈 때 한 단어만 아랫줄에 남지 않도록 줄 길이를 고르게 맞춘다.
+            textWrap: "balance",
+          } as React.CSSProperties
+        }
       >
         {cue.text}
       </div>
@@ -97,18 +102,21 @@ export const Badge: React.FC<{ text: string }> = ({ text }) => {
 };
 
 /** Split narration into caption cues of at most `maxWords`, spread over the scene. */
-export const autoCaptions = (scenes: { duration: number; say?: string }[], maxWords = 9): Caption[] => {
+export const autoCaptions = (scenes: { duration: number; say?: string }[], maxWords = 7): Caption[] => {
   const out: Caption[] = [];
   let at = 0;
   for (const s of scenes) {
     const words = (s.say ?? "").split(/\s+/).filter(Boolean);
     if (words.length) {
-      // Even chunk sizes so the last cue is never a lonely word.
-      const size = Math.ceil(words.length / Math.ceil(words.length / maxWords));
-      const chunks: string[][] = [];
-      for (let i = 0; i < words.length; i += size) chunks.push(words.slice(i, i + size));
-      const per = s.duration / chunks.length;
-      chunks.forEach((c, i) => out.push({ start: at + i * per, end: at + (i + 1) * per, text: c.join(" ") }));
+      // Break at sentence ends and natural pauses; time each chunk by its length (no voice to align to).
+      const chunks = chunkWords(words, (w) => w, maxWords).map((c) => c.join(" "));
+      const total = chunks.reduce((n, c) => n + c.length + 6, 0);
+      let t = at;
+      for (const c of chunks) {
+        const len = (s.duration * (c.length + 6)) / total;
+        out.push({ start: t, end: t + len, text: c });
+        t += len;
+      }
     }
     at += s.duration;
   }
